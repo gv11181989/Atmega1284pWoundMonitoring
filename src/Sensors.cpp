@@ -3,7 +3,8 @@
 #include <Wire.h>
 
 
-void i2cSetup(int i2cAddr){
+
+void tempSensorSetup(int i2cAddr){
     
   Wire.begin();
   Wire.beginTransmission(i2cAddr);
@@ -11,7 +12,8 @@ void i2cSetup(int i2cAddr){
   delay(300);
 }
 
-float i2cReading(int i2cAddr,int cmd) {
+
+float tempReading(int i2cAddr,int cmd) {
   unsigned int data[2];
 
   Wire.beginTransmission(i2cAddr);
@@ -31,5 +33,7 @@ float i2cReading(int i2cAddr,int cmd) {
   }
     // Convert the data
   float outPut  = ((data[0] * 256.0) + data[1]);
-  return outPut;
+  float celsTemp = ((175.72 * outPut) / 65536.0) - 46.85;
+  return celsTemp;
   }
+
