@@ -7,6 +7,7 @@ void sleepModeSetup()
 {
   EICRA |= (1 << ISC21) | (1 << ISC20); // interrupt on rising edge of INT0
 }
+
 void GoToSleep()
 {
 
@@ -39,3 +40,4 @@ ISR(WDT_vect)
 {
   // wdt_disable(); // disable watchdog
 }
+

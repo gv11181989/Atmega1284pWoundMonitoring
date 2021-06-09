@@ -22,45 +22,6 @@ void Uart1Setup(unsigned int baud)
   UCSR1C = (3 << UCSZ10);
 }
 
-// void ArduinoToBle()
-// {
-//   while (1)
-//   {
-//     PORTB |= (1 << 5);
-//     /* Wait for data to be received */
-//     while (!(UCSR0A & (1 << RXC0)))
-//       ;
-//     /* Get and return received data from buffer */
-//     char rx = UDR0;
-//     if (rx == '\n')
-//       break;
-//     if (rx == '\r')
-//       break;
-//     /* Wait for empty transmit buffer */
-//     while (!(UCSR1A & (1 << UDRE1)))
-//       ;
-//     /* Put data into buffer, sends the data */
-//     UDR1 = rx;
-//   }
-// }
-
-// void BleToArduino()
-// {
-//   char rx;
-//   /* Wait for data to be received */
-//   while ((UCSR1A & (1 << RXC1)))
-//   {
-//     /* Get and return received data from buffer */
-//     rx = UDR1;
-
-//     /* Wait for empty transmit buffer */
-//     while (!(UCSR0A & (1 << UDRE0)))
-//       ;
-//     /* Put data into buffer, sends the data */
-//     UDR0 = rx;
-//   }
-// }
-
 void USART0_Transmit(unsigned char data)
 {
   /* Wait for empty transmit buffer */
@@ -113,4 +74,66 @@ void Uart0SendFloat(float data)
   USART0_Transmit(b[1]);
   USART0_Transmit(b[2]);
   USART0_Transmit(b[3]);
+}
+
+void Uart0SendString(String data)
+{
+  // char arr[data.length() + 1];
+  //   strcpy(arr, data.c_str());
+  int i = 0;
+  while (data[i] != 0x00)
+  {
+    USART0_Transmit(data[i]);
+    i++;
+  }
+}
+
+void ArduinoToBle()
+{
+  while (1)
+  {
+
+    /* Wait for data to be received */
+    while (!(UCSR0A & (1 << RXC0)))
+    {
+    }
+    /* Get and return received data from buffer */
+    char rx = UDR0;
+    if (rx == '\n')
+      break;
+    if (rx == '\r')
+      break;
+    /* Wait for empty transmit buffer */
+    while (!(UCSR1A & (1 << UDRE1)))
+      ;
+    /* Put data into buffer, sends the data */
+    UDR1 = rx;
+  }
+}
+
+void BleToArduino()
+{
+  char rx;
+  int i = 0;
+  PORTB ^= (1 << PB5);
+  /* Wait for data to be received */
+  while ((UCSR1A & (1 << RXC1)) == (1 << RXC1))
+  {
+    /* Get and return received data from buffer */
+    rx = UDR1;
+    USART0_Transmit(rx);
+  }
+}
+
+void BleConfigMode()
+{
+  while ((PINA & (1 << PA0)) == (1 << PA0))
+  {
+    String data("\nBLE configure mode,Waiting for commands!!\n");
+    Uart0SendString(data);
+    delay(100);
+    ArduinoToBle();
+    delay(100);
+    BleToArduino();
+  }
 }
