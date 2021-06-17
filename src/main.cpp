@@ -12,7 +12,7 @@ Adafruit_LSM9DS0 lsm = Adafruit_LSM9DS0(1000);
 
 // SI7021 I2C address is 0x40(64)
 #define si7021Addr 0x40
-#define Baud 51
+#define Baud 6
 
 void setup()
 {
@@ -34,7 +34,14 @@ void loop()
     BleConfigMode();
   }
 
-  USART1_Transmit('A');
+  for (int i = 0; i < 10; i++)
+  {
+    PORTB ^= (1 << PB5);
+    delay(100);
+    PORTB ^= (1 << PB5);
+    delay(100);
+  }
+  // USART1_Transmit('A');
   // Temp sensor reading
   float tempSensor = tempReading(si7021Addr, 0xF3);
 
@@ -46,11 +53,9 @@ void loop()
   float Z = (float(accel.acceleration.z));
 
   Uart0SendFloat(X);
-  delay(2);
-  Uart0SendFloat(Y);
-  delay(2);
-  Uart0SendFloat(Z);
-  delay(2);
+  // delay(2);
+  // Uart0SendFloat(Z);
+  // delay(2);
 
-  // GoToSleep();
+  GoToSleep();
 }

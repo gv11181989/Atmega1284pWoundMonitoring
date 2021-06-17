@@ -11,7 +11,7 @@ void sleepModeSetup()
 void GoToSleep()
 {
 
-  for (int i = 0; i < 35; i++)
+  for (int i = 0; i < 2; i++)
   {
     MCUSR = 0; // reset various flags
     WDTCSR |= (1 << WDCE) | (1 << WDE);
