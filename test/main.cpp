@@ -3,17 +3,16 @@
 #include <avr/wdt.h>
 #include <Wire.h>
 #include <header.h>
+#include <SPI.h>
+#include <Adafruit_LSM9DS0.h>
+#include <Adafruit_Sensor.h>
 #include <CircularBuffer.h>
-#include "Sensors.cpp"
+
+// i2c Motion sensor
+Adafruit_LSM9DS0 lsm = Adafruit_LSM9DS0(1000);
 
 // SI7021 I2C address is 0x40(64)
-#define si7021 0x40
-// ADXL345 I2C address is 0x53(64)
-#define ADXL345 0x53
-
-accelerometer Accelerometer;
-temperatureSensor Temp;
-
+#define si7021Addr 0x40
 #define Baud 12
 unsigned long timeNow = 0;
 
@@ -24,16 +23,17 @@ CircularBuffer<float, 90> motionData;
 void setup()
 {
   DDRA &= ~(1 << PA0);
-
-  Temp.Setup(si7021);
-  Accelerometer.Setup(ADXL345);
-
+  tempSensorSetup(si7021Addr);
   Uart0Setup(Baud);
   Uart1Setup(Baud);
 
   sleepModeSetup();
+
+  lsm.begin();
+  lsm.setupAccel(lsm.LSM9DS0_ACCELRANGE_2G);
+
   // Put BLE to Sleep
-  // BleSleep();
+  BleSleep();
 }
 
 void loop()
@@ -43,26 +43,21 @@ void loop()
   //   BleConfigMode();
   // }
 
+  
+
   // Temp sensor reading
-  float tempSensor = Temp.Read(0xF3);
+  float tempSensor = tempReading(si7021Addr, 0xF3);
   tempData.push(tempSensor);
 
   // Motion sensor readings
-  Accelerometer.Read(0x32);
-  
-  float X = Accelerometer.X();
+  sensors_event_t accel, mag, gyro, temp;
+  lsm.getEvent(&accel, &mag, &gyro, &temp);
+  float X = (float(accel.acceleration.x));
   motionData.push(X);
-
-  float Y = Accelerometer.Y();
+  float Y = (float(accel.acceleration.y));
   motionData.push(Y);
-
-  float Z = Accelerometer.Z();
+  float Z = (float(accel.acceleration.z));
   motionData.push(Z);
-
-
-  Uart0SendFloat(X);
-  Uart0SendFloat(Y);
-  Uart1SendFloat(Z);
 
   // Put MCU to Sleep
   // GoToSleep();

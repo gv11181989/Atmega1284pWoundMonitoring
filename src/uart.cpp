@@ -4,6 +4,7 @@
 
 void Uart0Setup(unsigned int baud)
 {
+  UCSR0A |= (1 << U2X0);
   UBRR0H = (baud >> 8); // Load upper 8-bits of the baud rate value into the high byte of the UBRR register
   UBRR0L = baud;        // Load lower 8-bits of the baud rate value into the low byte of the UBRR register
   // Enable RXD and TXD pins
@@ -14,6 +15,12 @@ void Uart0Setup(unsigned int baud)
 
 void Uart1Setup(unsigned int baud)
 {
+  // CLKPR &= ~(1 << CLKPS3);
+  // CLKPR |= (1 << CLKPS2);
+  // CLKPR &= ~(1 << CLKPS1);
+  // CLKPR &= ~(1 << CLKPS0);
+  // CLKPR |= (1 << CLKPCE);
+  UCSR1A |= (1 << U2X1);
   UBRR1H = (baud >> 8); // Load upper 8-bits of the baud rate value into the high byte of the UBRR register
   UBRR1L = baud;        // Load lower 8-bits of the baud rate value into the low byte of the UBRR register
   // Enable RXD and TXD pins
@@ -47,7 +54,7 @@ void USART1_Transmit(unsigned char data)
   while (!(UCSR1A & (1 << UDRE1)))
     ;
   /* Put data into buffer, sends the data */
-  delay(1);
+  // delay(1);
   UDR1 = data;
 }
 unsigned char USART1_Receive(void)
@@ -76,14 +83,31 @@ void Uart0SendFloat(float data)
   USART0_Transmit(b[3]);
 }
 
+void Uart1SendFloat(float data)
+{
+  byte *b = (byte *)&data;
+  USART1_Transmit(b[0]);
+  USART1_Transmit(b[1]);
+  USART1_Transmit(b[2]);
+  USART1_Transmit(b[3]);
+}
+
 void Uart0SendString(String data)
 {
-  // char arr[data.length() + 1];
-  //   strcpy(arr, data.c_str());
   int i = 0;
   while (data[i] != 0x00)
   {
     USART0_Transmit(data[i]);
+    i++;
+  }
+}
+
+void Uart1SendString(String data)
+{
+  int i = 0;
+  while (data[i] != 0x00)
+  {
+    USART1_Transmit(data[i]);
     i++;
   }
 }
@@ -131,9 +155,9 @@ void BleConfigMode()
   {
     String data("\nBLE configure mode,Waiting for commands!!\n");
     Uart0SendString(data);
-    delay(100);
+    delay(12);
     ArduinoToBle();
-    delay(100);
+    delay(12);
     BleToArduino();
   }
 }

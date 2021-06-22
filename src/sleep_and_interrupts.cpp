@@ -2,6 +2,7 @@
 #include <avr/sleep.h>
 #include <avr/wdt.h>
 #include <Wire.h>
+# include <header.h>
 
 void sleepModeSetup()
 {
@@ -18,14 +19,25 @@ void GoToSleep()
     WDTCSR = (1 << WDIE) | (0 << WDE) | (1 << WDP3) | (1 << WDP0); // 8s / interrupt, no system reset
     wdt_reset();
 
-    EIMSK |= (1 << INT2); // external interrupt enable on INT2
+    // EIMSK |= (1 << INT2); // external interrupt enable on INT2
 
     SMCR |= (1 << SM1); // power down sleep mode
     cli();
     SMCR |= (1 << SE); // sleep_enable();
+
+    // power_adc_disable();
+    // power_usart0_disable();
+    // power_spi_disable();
+    // power_timer0_disable();
+    // power_timer1_disable();
+    // power_timer2_disable();
+    // power_twi_disable();
+
     sei();
-    asm("SLEEP");       // sleep_cpu();
+    sleep_cpu();        // sleep_cpu();
     SMCR &= ~(1 << SE); // sleep_disable();
+
+    // power_all_enable();
   }
 }
 
@@ -41,3 +53,14 @@ ISR(WDT_vect)
   // wdt_disable(); // disable watchdog
 }
 
+void BleSleep()
+{
+  unsigned long timeNow = millis();
+  Uart1SendString("AT");
+  while (timeNow + 2 > millis())
+    ;
+  timeNow = millis();
+  Uart1SendString("AT+SLEEP");
+  while (timeNow + 500 > millis())
+    ;
+}
