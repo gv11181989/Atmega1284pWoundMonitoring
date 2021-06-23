@@ -25,6 +25,8 @@ void setup()
 {
   DDRA &= ~(1 << PA0);
 
+  DDRB |= (1 << PB5);
+
   Temp.Setup(si7021);
   Accelerometer.Setup(ADXL345);
 
@@ -49,7 +51,7 @@ void loop()
 
   // Motion sensor readings
   Accelerometer.Read(0x32);
-  
+
   float X = Accelerometer.X();
   motionData.push(X);
 
@@ -58,12 +60,12 @@ void loop()
 
   float Z = Accelerometer.Z();
   motionData.push(Z);
-
-
-  Uart0SendFloat(X);
-  Uart0SendFloat(Y);
-  Uart1SendFloat(Z);
-
+  for (int i = 0; i < 90; i++)
+  {
+    PORTB |= (1 << PB5);
+    Uart0SendFloat(motionData[i]);
+  }
+  PORTB &= ~(1 << PB5);
   // Put MCU to Sleep
-  // GoToSleep();
+  GoToSleep();
 }
