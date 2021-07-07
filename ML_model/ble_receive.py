@@ -15,7 +15,7 @@ def notification_handler(sender, data):
     values = round(struct.unpack('<f', data)[0],2)
     motion_dataset.append(values)
     to_csv = np.array(motion_dataset)
-    pd.DataFrame(to_csv).to_csv("moving_vertical_5.csv",index=False)
+    pd.DataFrame(to_csv).to_csv("moving_vertical_7.csv",index=False)
     print(motion_dataset)
 
 async def run(address):
