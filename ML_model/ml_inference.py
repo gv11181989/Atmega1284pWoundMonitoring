@@ -50,6 +50,9 @@ clf = SVC(C=1, kernel='rbf', gamma=1)
 clf.fit(X_train,y_train)
 pred = clf.predict(X_test)
 
+rmse = np.sqrt(mean_squared_error(y_test, pred))
+print("RMSE: %f" % (rmse))
+
 # h = 0.1
 # x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
 # y_min, y_max = X[:, 0].min() - 1, X[:, 0].max() + 1
