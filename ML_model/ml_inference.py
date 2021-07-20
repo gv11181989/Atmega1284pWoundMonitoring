@@ -11,24 +11,27 @@ import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import mean_squared_error
+from micromlgen import port
 
 
 def load_features(folder):
     dataset = np.array([])
     label = np.array([])
+    classmap = {}
     count = (len(glob('%s/*.csv' % folder)))
     for class_idx, filename in enumerate(glob('%s/*.csv' % folder)):
         name = basename(filename)[:-6]
+        classmap[class_idx] = name
         sample = pd.read_csv(filename, ',')
         sample = np.array(sample).reshape(1, len(sample))[0]
         dataset = np.append(dataset, sample)
         label = np.append(label, name)
     dataset = dataset.reshape(count, len(sample))
-    return dataset, label
+    return dataset, label,classmap
 
 
 folder = 'dataset'
-dataset, label = load_features(folder)
+dataset, label,classmap = load_features(folder)
 le = LabelEncoder()
 int_label = (le.fit_transform(label))
 X, y = dataset, int_label
@@ -37,7 +40,7 @@ X, y = dataset, int_label
 X_mean = X.mean(axis=0)
 X = np.round((X-X_mean), 2)
 
-# pca = PCA(n_components=2)
+# pca = PCA(n_components=4)
 # pca.fit(X)
 # X = pca.transform(X)
 
@@ -46,9 +49,14 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 
 # lists with the parameters for the classifier SVM
-clf = SVC(C=1, kernel='rbf', gamma=1)
+clf = SVC(C=10000, kernel='rbf', gamma=1)
 clf.fit(X_train,y_train)
 pred = clf.predict(X_test)
+
+score =clf.score(X_test,y_test)
+print(score)
+print(pred)
+print(y_test)
 
 rmse = np.sqrt(mean_squared_error(y_test, pred))
 print("RMSE: %f" % (rmse))
@@ -66,3 +74,10 @@ print("RMSE: %f" % (rmse))
 #             label="Luck")
 
 # plt.show()
+
+# c_code = port(clf, classmap=classmap)
+
+# print(c_code)
+
+# with open("model.h", "w") as text_file:
+#     text_file.write(c_code)

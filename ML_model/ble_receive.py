@@ -5,7 +5,7 @@ import numpy as np
 import struct
 import pandas as pd 
 
-motion_dataset = collections.deque(maxlen=90)
+motion_dataset = collections.deque(maxlen=45)
 CHARACTERISTIC_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb"  # <--- Change to the characteristic you want to enable notifications from.
 ADDRESS = "64:69:4E:8A:09:80"
 
@@ -15,7 +15,7 @@ def notification_handler(sender, data):
     values = round(struct.unpack('<f', data)[0],2)
     motion_dataset.append(values)
     to_csv = np.array(motion_dataset)
-    pd.DataFrame(to_csv).to_csv("moving_vertical_7.csv",index=False)
+    pd.DataFrame(to_csv).to_csv("moving_horizontal_0.csv",index=False)
     print(motion_dataset)
 
 async def run(address):

@@ -254,7 +254,7 @@ if __name__ == '__main__':
     from sklearn.preprocessing import LabelEncoder, normalize
 
     folder = 'dataset'
-    dataset, label = load_features(folder)
+    dataset, label,classmap = load_features(folder)
     le = LabelEncoder()
     int_label = (le.fit_transform(label))
     X, y = dataset, int_label

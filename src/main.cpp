@@ -18,7 +18,7 @@ temperatureSensor Temp;
 unsigned long timeNow = 0;
 
 CircularBuffer<float, 4> tempData;
-CircularBuffer<float, 90> motionData;
+CircularBuffer<float, 45> motionData;
 // unsigned long timeNow = 0;
 
 void setup()
@@ -44,6 +44,7 @@ void loop()
   // }
 
   // Temp sensor reading
+  for (int i=0;i<5;i++){
   float tempSensor = Temp.Read(0xF3);
   tempData.push(tempSensor);
 
@@ -58,12 +59,13 @@ void loop()
 
   float Z = Accelerometer.Z();
   motionData.push(Z);
-
-
-  Uart0SendFloat(X);
-  Uart0SendFloat(Y);
-  Uart1SendFloat(Z);
-
+  delay(100);
+  }
+  for (int i = 0; i < 45; i++)
+  {
+    Uart1SendFloat(motionData[i]);
+    delay(5);
+  }
   // Put MCU to Sleep
-  // GoToSleep();
+  GoToSleep();
 }
