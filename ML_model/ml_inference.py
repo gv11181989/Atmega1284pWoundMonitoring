@@ -20,7 +20,7 @@ def load_features(folder):
     classmap = {}
     count = (len(glob('%s/*.csv' % folder)))
     for class_idx, filename in enumerate(glob('%s/*.csv' % folder)):
-        name = basename(filename)[:-6]
+        name = basename(filename)[:-7]
         classmap[class_idx] = name
         sample = pd.read_csv(filename, ',')
         sample = np.array(sample).reshape(1, len(sample))[0]
@@ -36,11 +36,11 @@ le = LabelEncoder()
 int_label = (le.fit_transform(label))
 X, y = dataset, int_label
 
-# Normalisation
-X_mean = X.mean(axis=0)
-X = np.round((X-X_mean), 2)
+# # Normalisation
+# X_mean = X.mean(axis=0)
+# X = np.round((X-X_mean), 2)
 
-# pca = PCA(n_components=4)
+# pca = PCA(n_components=2)
 # pca.fit(X)
 # X = pca.transform(X)
 
@@ -49,7 +49,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 
 # lists with the parameters for the classifier SVM
-clf = SVC(C=10000, kernel='rbf', gamma=1)
+clf = SVC(C=1, kernel='rbf', gamma=0.1)
 clf.fit(X_train,y_train)
 pred = clf.predict(X_test)
 
@@ -61,7 +61,7 @@ print(y_test)
 rmse = np.sqrt(mean_squared_error(y_test, pred))
 print("RMSE: %f" % (rmse))
 
-# h = 0.1
+# h = 1
 # x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
 # y_min, y_max = X[:, 0].min() - 1, X[:, 0].max() + 1
 # xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
@@ -75,9 +75,7 @@ print("RMSE: %f" % (rmse))
 
 # plt.show()
 
-# c_code = port(clf, classmap=classmap)
+c_code = port(clf, classmap=classmap)
 
-# print(c_code)
-
-# with open("model.h", "w") as text_file:
-#     text_file.write(c_code)
+with open("model_poly.h", "w") as text_file:
+    text_file.write(c_code)
