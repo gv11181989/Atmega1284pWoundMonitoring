@@ -19,6 +19,9 @@ unsigned long timeNow = 0;
 
 CircularBuffer<float, 4> tempData;
 CircularBuffer<float, 45> motionData;
+CircularBuffer<float, 5> Xnorm;
+CircularBuffer<float, 5> Ynorm;
+CircularBuffer<float, 5> Znorm;
 // unsigned long timeNow = 0;
 
 void setup()
@@ -44,28 +47,53 @@ void loop()
   // }
 
   // Temp sensor reading
-  for (int i=0;i<5;i++){
+  for (int i = 0; i < 5; i++)
+  {
+    Accelerometer.Read(0x32);
+    float X = Accelerometer.X();
+    Xnorm.push(X);
+
+    float Y = Accelerometer.Y();
+    Ynorm.push(Y);
+
+    float Z = Accelerometer.Z();
+    Znorm.push(Z);
+    delay(5);
+  }
+  float avgx = 0;
+  float avgy = 0;
+  float avgz = 0;
+  using index_t = decltype(Xnorm)::index_t;
+  for (index_t i = 0; i < Xnorm.size(); i++)
+  {
+    avgx += Xnorm[i] / Xnorm.size();
+    avgy += Ynorm[i] / Ynorm.size();
+    avgz += Znorm[i] / Znorm.size();
+  }
+
+for (int i=0;i<5;i++)
+{
   float tempSensor = Temp.Read(0xF3);
   tempData.push(tempSensor);
 
   // Motion sensor readings
   Accelerometer.Read(0x32);
-  
-  float X = Accelerometer.X();
+
+  float X = Accelerometer.X() - avgx;
   motionData.push(X);
 
-  float Y = Accelerometer.Y();
+  float Y = Accelerometer.Y() - avgy;
   motionData.push(Y);
 
-  float Z = Accelerometer.Z();
+  float Z = Accelerometer.Z() - avgz;
   motionData.push(Z);
   delay(100);
-  }
-  for (int i = 0; i < 45; i++)
-  {
-    Uart1SendFloat(motionData[i]);
-    delay(5);
-  }
-  // Put MCU to Sleep
-  GoToSleep();
+}
+for (int i = 0; i < 45; i++)
+{
+  Uart1SendFloat(motionData[i]);
+  delay(5);
+}
+// Put MCU to Sleep
+GoToSleep();
 }
