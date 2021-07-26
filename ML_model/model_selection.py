@@ -208,16 +208,17 @@ if __name__ == '__main__':
     X, x, Y, y = train_test_split(
         dataset, int_label, test_size=0.33, random_state=42)
 
-    clf = RVC(kernel='rbf')
+    clf = RVC(kernel='rbf', gamma=0.001)
     # clf = SVC(C=1, kernel='linear', gamma=0.1)
     clf.fit(X, Y)
 
     print(clf.score(x,y))
 
     prdction = [X[7]]
-    print(prdction)
 
-    print(clf.predict(prdction))
+
+    print(y)
+    print(clf.predict(x))
 
     c_code = port(clf)
     with open('model.h', "w") as text_file:
