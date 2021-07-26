@@ -5,6 +5,9 @@
 #include <header.h>
 #include <CircularBuffer.h>
 #include "Sensors.cpp"
+#include "model.h"
+
+Eloquent::ML::Port::SVM clf;
 
 // SI7021 I2C address is 0x40(64)
 #define si7021 0x40
@@ -89,11 +92,22 @@ for (int i=0;i<5;i++)
   motionData.push(Z);
   delay(100);
 }
-for (int i = 0; i < 45; i++)
-{
-  Uart1SendFloat(motionData[i]);
-  delay(5);
-}
+
+// float dataset[45] = {};
+// for (int i = 0; i < 45; i++)
+// {
+//   dataset[i] = motionData[i];
+//   Uart1SendFloat(dataset[i]);
+//   delay(5);
+// }
+
+float dataset1[45] = {-0.0, 0.0, 0.0, -0.0, 0.0, -0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.01, 0.0, 0.01, 0.0, 0.0, -0.01, 0.01, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, -0.01, 0.0, -0.0, 0.0, -0.0, -0.0, -0.0, -0.01, -0.01, -0.0, -0.01, -0.0, -0.0, -0.0, -0.01, -0.01, -0.01};
+
+String test = String(clf.predictLabel(dataset1));
+
+Uart1SendString(test);
+
 // Put MCU to Sleep
 GoToSleep();
 }
+
