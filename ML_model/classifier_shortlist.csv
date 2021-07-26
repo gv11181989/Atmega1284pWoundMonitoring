@@ -1,0 +1,11 @@
+C,Name,Score,kernel,gamma,coef0,degree,max_depth,n_estimators
+10000.0,SVC,100.0,rbf,0.1,,,,
+100.0,SVC,100.0,rbf,0.1,,,,
+1000.0,SVC,100.0,rbf,0.1,,,,
+1.0,SVC,100.0,rbf,0.1,,,,
+10.0,SVC,100.0,rbf,0.1,,,,
+10000.0,SVC,88.67,rbf,0.01,,,,
+100.0,SVC,88.67,rbf,0.01,,,,
+10.0,SVC,88.67,rbf,0.01,,,,
+1000.0,SVC,88.67,rbf,0.01,,,,
+1.0,SVC,88.67,rbf,0.01,,,,
