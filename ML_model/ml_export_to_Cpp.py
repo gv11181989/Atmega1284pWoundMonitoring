@@ -2,10 +2,12 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-from model_selection import load_features, classifier
+from model_selection import load_features, classifier,model_selection
 from micromlgen import port
 import json
 from pathlib import Path
+
+model_selection('dataset')
 
 dataset, label, classmap = load_features('dataset')
 
