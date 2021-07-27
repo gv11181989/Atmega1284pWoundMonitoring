@@ -50,6 +50,10 @@ void loop()
   // }
 
   // Temp sensor reading
+  float tempSensor = Temp.Read(0xF3);
+  tempData.push(tempSensor);
+
+  // Calculation normalisation factor
   for (int i = 0; i < 5; i++)
   {
     Accelerometer.Read(0x32);
@@ -74,11 +78,9 @@ void loop()
     avgz += Znorm[i] / Znorm.size();
   }
 
+  // Storing normalized Motion sensor data in a buffer of size 45.
   for (int i = 0; i < 5; i++)
   {
-    float tempSensor = Temp.Read(0xF3);
-    tempData.push(tempSensor);
-
     // Motion sensor readings
     Accelerometer.Read(0x32);
 
@@ -93,27 +95,29 @@ void loop()
     delay(100);
   }
 
-  float dataset[45] = {};
-  for (int i = 0; i < 45; i++)
+  // calculating average temp of temperature buffer
+  float avg_temp = 0;
+  using index_t = decltype(tempData)::index_t;
+  for (index_t i = 0; i < tempData.size(); i++)
   {
-    dataset[i] = motionData[i];
+    avg_temp += tempData[i] / tempData.size();
   }
 
+  // trigerring ML inference if Temp rises above a threshhold
+  if (avg_temp >= 37.5)
+  {
+    float dataset[45] = {};
+    for (int i = 0; i < 45; i++)
+    {
+      dataset[i] = motionData[i];
+    }
 
-  int test = clf.predict(dataset);
+    int test = clf.predict(dataset);
 
-  Uart1SendFloat(test);
-  // if (test == 0){
-  //   String send = "person in motion";
-  //   Uart1SendString(send);
-  // }
-  // else{
-  //   String send = "person at rest";
-  //   Uart1SendString(send);
-  // }
-  
+    Uart1SendFloat(test);
+  }
+
   delay(50);
-
 
   // Put MCU to Sleep
   GoToSleep();
