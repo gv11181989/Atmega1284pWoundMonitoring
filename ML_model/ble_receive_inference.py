@@ -4,6 +4,7 @@ import collections
 import numpy as np
 import struct
 import pandas as pd 
+import sys
 
 motion_dataset = collections.deque(maxlen=45)
 CHARACTERISTIC_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb"  # <--- Change to the characteristic you want to enable notifications from.
@@ -12,8 +13,8 @@ ADDRESS = "64:69:4E:8A:09:80"
 
 def notification_handler(sender, data):
     """Simple notification handler which prints the data received."""
-    # values = round(struct.unpack('<f', data)[0],2)
-    print(data)
+    values = int.from_bytes(data, byteorder='little', signed=False)
+    print(values)
 
 async def run(address):
 

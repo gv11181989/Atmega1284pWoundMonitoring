@@ -7,7 +7,7 @@
 #include "Sensors.cpp"
 #include "model.h"
 
-Eloquent::ML::Port::SVM clf;
+Eloquent::ML::Port::RVC clf;
 
 // SI7021 I2C address is 0x40(64)
 #define si7021 0x40
@@ -74,40 +74,47 @@ void loop()
     avgz += Znorm[i] / Znorm.size();
   }
 
-for (int i=0;i<5;i++)
-{
-  float tempSensor = Temp.Read(0xF3);
-  tempData.push(tempSensor);
+  for (int i = 0; i < 5; i++)
+  {
+    float tempSensor = Temp.Read(0xF3);
+    tempData.push(tempSensor);
 
-  // Motion sensor readings
-  Accelerometer.Read(0x32);
+    // Motion sensor readings
+    Accelerometer.Read(0x32);
 
-  float X = Accelerometer.X() - avgx;
-  motionData.push(X);
+    float X = Accelerometer.X() - avgx;
+    motionData.push(X);
 
-  float Y = Accelerometer.Y() - avgy;
-  motionData.push(Y);
+    float Y = Accelerometer.Y() - avgy;
+    motionData.push(Y);
 
-  float Z = Accelerometer.Z() - avgz;
-  motionData.push(Z);
-  delay(100);
+    float Z = Accelerometer.Z() - avgz;
+    motionData.push(Z);
+    delay(100);
+  }
+
+  float dataset[45] = {};
+  for (int i = 0; i < 45; i++)
+  {
+    dataset[i] = motionData[i];
+  }
+
+
+  int test = clf.predict(dataset);
+
+  Uart1SendFloat(test);
+  // if (test == 0){
+  //   String send = "person in motion";
+  //   Uart1SendString(send);
+  // }
+  // else{
+  //   String send = "person at rest";
+  //   Uart1SendString(send);
+  // }
+  
+  delay(50);
+
+
+  // Put MCU to Sleep
+  GoToSleep();
 }
-
-// float dataset[45] = {};
-// for (int i = 0; i < 45; i++)
-// {
-//   dataset[i] = motionData[i];
-//   Uart1SendFloat(dataset[i]);
-//   delay(5);
-// }
-
-float dataset1[45] = {-0.0, 0.0, 0.0, -0.0, 0.0, -0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.01, 0.0, 0.01, 0.0, 0.0, -0.01, 0.01, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, -0.01, 0.0, -0.0, 0.0, -0.0, -0.0, -0.0, -0.01, -0.01, -0.0, -0.01, -0.0, -0.0, -0.0, -0.01, -0.01, -0.01};
-
-String test = String(clf.predictLabel(dataset1));
-
-Uart1SendString(test);
-
-// Put MCU to Sleep
-GoToSleep();
-}
-
