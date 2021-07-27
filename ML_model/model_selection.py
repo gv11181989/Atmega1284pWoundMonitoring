@@ -158,36 +158,88 @@ def model_selection(folder_address):
     pd.DataFrame(Short_list).to_csv("classifier_shortlist.csv", index=False)
 
 
-# def model_selection2(X, y):
+def model_selection2(dataset,label):
 
-#     dataset, label = X, y
+ 
+    
 
-#     classifiers = [MLPClassifier]
+    classifiers = [SVC]#, RandomForestClassifier, DecisionTreeClassifier]
 
-#     # lists with the parameters for the classifier SVM
-#     activation = ['identity', 'logistic', 'tanh', 'relu']
-#     solver = ['lbfgs', 'sgd', 'adam']
-#     alpha = [1, 0.1, 0.01, 0.001, 0.0001]
-#     learning_rate = ['constant', 'invscaling', 'adaptive']
+    # lists with the parameters for the classifier SVM
+    c_values = [0.1, 1, 10, 100, 1000, 10000]
+    kernels = ['linear', 'sigmoid','rbf,' 'poly']
+    gamma_values = [1, 0.1, 0.01, 0.001, 0.0001]
+    degree_values = [2, 3, 4, 5, 6]
+    coef0_values = [0, 0.25, 0.5, 0.75, 1]
 
-#     # # lists with the parameters for the classifier Random forest
-#     # n_estimators_ = [10, 40, 80, 100]
-#     # max_depth_ = [2, 8, 16, 20]
+    # lists with the parameters for the classifier Random forest
+    n_estimators_ = [10, 40, 80, 100]
+    max_depth_ = [2, 8, 16, 20]
 
-#     performances = pd.DataFrame()
-#     clf = MLPClassifier
-#     for A in activation:
-#         for S in solver:
-#                 for al in alpha:
-#                         for l in learning_rate:
-#                                     parameters = {
-#                                         'activation': A, 'solver': S, 'alpha': al, 'learning_rate': l,'max_iter':10000}
-#                                     _, performance = classifier(
-#                                         clf, dataset, label, **parameters)
-#                                     performances = performances.append(
-#                                         (performance), ignore_index=True)
-#                                     print(performance)
+    performances = pd.DataFrame()
 
+    for clf in classifiers:
+        if clf == SVC:
+            for C in c_values:
+                for kernel in kernels:
+                    if kernel == 'rbf' or kernel == 'poly' or kernel == 'sigmoid':
+                        for gamma in gamma_values:
+                            if kernel == 'poly' or kernel == 'sigmoid':
+                                for coef0 in coef0_values:
+                                    if kernel == 'poly':
+                                        for degree in degree_values:
+                                            parameters = {
+                                                'C': C, 'kernel': kernel, 'gamma': gamma, 'degree': degree, 'coef0': coef0}
+                                            _, performance = classifier(
+                                                clf, dataset, label, **parameters)
+                                            performances = performances.append(
+                                                (performance), ignore_index=True)
+                                            print(performance)
+                                    else:
+                                        parameters = {
+                                            'C': C, 'kernel': kernel, 'gamma': gamma, 'coef0': coef0}
+                                        _, performance = classifier(
+                                            clf, dataset, label, **parameters)
+                                        performances = performances.append(
+                                            (performance), ignore_index=True)
+                                        print(performance)
+                            else:
+                                parameters = {
+                                    'C': C, 'kernel': kernel, 'gamma': gamma}
+                                _, performance = classifier(
+                                    clf, dataset, label, **parameters)
+                                performances = performances.append(
+                                    (performance), ignore_index=True)
+                                print(performance)
+                    else:
+                        parameters = {'C': C, 'kernel': kernel}
+                        _, performance = classifier(
+                            clf, dataset, label, **parameters)
+                        performances = performances.append(
+                            (performance), ignore_index=True)
+                        print(performance)
+
+        elif clf == RandomForestClassifier:
+            for n_estimator in n_estimators_:
+                for max_depth in max_depth_:
+                    parameters = {'n_estimators': n_estimator,
+                                  'max_depth': max_depth}
+                    _, performance = classifier(
+                        clf, dataset, label, **parameters)
+                    performances = performances.append(
+                        (performance), ignore_index=True)
+
+                    print(performance)
+        else:
+            _, performance = classifier(clf, dataset, label)
+            performances = performances.append(
+                (performance), ignore_index=True)
+
+            print(performance)
+
+    Short_list = performances.sort_values(
+        by=['Score'], ascending=False).iloc[:10, :]
+    pd.DataFrame(Short_list).to_csv("classifier_shortlist.csv", index=False)
 
 
 if __name__ == '__main__':
@@ -201,6 +253,24 @@ if __name__ == '__main__':
 
     folder = 'dataset'
     dataset, label,classmap = load_features(folder)
+
+    thirdclass = np.full(dataset[0].shape,10).reshape(1,45)
+    dataset = np.append(dataset,thirdclass,axis=0)
+    label = np.append(label,'temp')
+
+
+
+
+    # from sklearn import datasets
+    # iris = datasets.load_iris()
+    # dataset = (iris['data'])
+    # label = (iris['target'])
+
+    # from sklearn.datasets import load_breast_cancer
+    # dataset = load_breast_cancer().data
+    # label = load_breast_cancer().target
+
+
     le = LabelEncoder()
     int_label = (le.fit_transform(label))
 
@@ -208,17 +278,19 @@ if __name__ == '__main__':
     X, x, Y, y = train_test_split(
         dataset, int_label, test_size=0.33, random_state=42)
 
-    clf = RVC(kernel='rbf', gamma=0.001)
+    clf = RVC(kernel='rbf', gamma=0.1)
     # clf = SVC(C=1, kernel='linear', gamma=0.1)
     clf.fit(X, Y)
 
     print(clf.score(x,y))
 
-    prdction = [X[7]]
+    prdction = [x[1]]
 
-
+    print(prdction)
     print(y)
     print(clf.predict(x))
+
+    # print(clf.relevant_vectors_)
 
     c_code = port(clf)
     with open('model.h', "w") as text_file:
