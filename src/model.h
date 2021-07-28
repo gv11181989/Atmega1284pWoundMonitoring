@@ -1,5 +1,6 @@
 #pragma once
 #include <stdarg.h>
+#include <CircularBuffer.h>
 namespace Eloquent {
     namespace ML {
         namespace Port {
@@ -8,7 +9,7 @@ namespace Eloquent {
                     /**
                     * Predict class for features vector
                     */
-                    int predict(float *x) {
+                    int predict(CircularBuffer<float, 45> &x) {
                         float votes[3] = { 0 };
                         votes[0] = (compute_kernel(x,  0.0, -0.0, -0.01, -0.0, -0.0, 0.0, -0.0, -0.01, -0.01, -0.01, -0.0, 0.0, -0.01, -0.0, -0.01, 0.01, -0.0, 0.0, 0.0, -0.0, 0.0, 0.01, -0.0, 0.0, 0.0, -0.0, 0.01, -0.01, -0.0, -0.0, -0.01, 0.0, -0.0, -0.0, 0.0, -0.0, -0.0, 0.01, -0.0, -0.0, 0.01, 0.0, -0.0, 0.01, 0.0) - 0.39274447252 ) * -10.140309019723 + -2.265079412947;
                         votes[1] = (compute_kernel(x,  0.0, -0.0, -0.01, -0.0, -0.0, 0.0, -0.0, -0.01, -0.01, -0.01, -0.0, 0.0, -0.01, -0.0, -0.01, 0.01, -0.0, 0.0, 0.0, -0.0, 0.0, 0.01, -0.0, 0.0, 0.0, -0.0, 0.01, -0.01, -0.0, -0.0, -0.01, 0.0, -0.0, -0.0, 0.0, -0.0, -0.0, 0.01, -0.0, -0.0, 0.01, 0.0, -0.0, 0.01, 0.0) - 0.39274447252 ) * 5.526396918676 + 2.383392782773;
@@ -32,7 +33,7 @@ namespace Eloquent {
                     * Compute kernel between feature vector and support vector.
                     * Kernel type: rbf
                     */
-                    float compute_kernel(float *x, ...) {
+                    float compute_kernel(CircularBuffer<float, 45>&x, ...) {
                         va_list w;
                         va_start(w, 45);
                         float kernel = 0.0;

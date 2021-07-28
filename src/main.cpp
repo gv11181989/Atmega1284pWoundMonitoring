@@ -39,7 +39,7 @@ void setup()
 
   sleepModeSetup();
   // Put BLE to Sleep
-  // BleSleep();
+  BleSleep();
 }
 
 void loop()
@@ -104,21 +104,23 @@ void loop()
   }
 
   // trigerring ML inference if Temp rises above a threshhold
-  if (avg_temp >= 37.5)
+  if (true)
   {
-    float dataset[45] = {};
-    for (int i = 0; i < 45; i++)
+    int test = clf.predict(motionData);
+    Uart1SendString("AT");
+    delay(100);
+    if (test == 0)
     {
-      dataset[i] = motionData[i];
+      Uart1SendString("motion");
     }
-
-    int test = clf.predict(dataset);
-
-    Uart1SendFloat(test);
+    else
+    {
+      Uart1SendString("rest");
+    }
+    
   }
-
-  delay(50);
-
+  delay(10);
   // Put MCU to Sleep
+  BleSleep();
   GoToSleep();
 }

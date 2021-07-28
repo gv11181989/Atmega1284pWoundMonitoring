@@ -13,15 +13,14 @@ ADDRESS = "64:69:4E:8A:09:80"
 
 def notification_handler(sender, data):
     """Simple notification handler which prints the data received."""
-    values = int.from_bytes(data, byteorder='little', signed=False)
-    print(values)
+    # values = int.from_bytes(data, byteorder='big')
+    print(data)
 
 async def run(address):
 
     async with BleakClient(address) as client:
         await client.start_notify(CHARACTERISTIC_UUID, notification_handler)
-        while (1):
-            await asyncio.sleep(1.0)
+        await asyncio.sleep(1.0)
         await client.stop_notify(CHARACTERISTIC_UUID)
 
 

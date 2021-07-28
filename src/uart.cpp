@@ -69,7 +69,7 @@ void USART1_Flush(void)
     dummy = UDR1;
 }
 
-void Uart0SendFloat(float data)
+void Uart0SendFloat(float *data)
 {
   byte *b = (byte *)&data;
   USART0_Transmit(b[0]);
@@ -78,7 +78,7 @@ void Uart0SendFloat(float data)
   USART0_Transmit(b[3]);
 }
 
-void Uart1SendFloat(float data)
+void Uart1SendFloat(int data)
 {
   byte *b = (byte *)&data;
   USART1_Transmit(b[0]);
