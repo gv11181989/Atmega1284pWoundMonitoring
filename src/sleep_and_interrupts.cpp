@@ -57,7 +57,7 @@ void BleSleep()
 {
   unsigned long timeNow = millis();
   Uart1SendString("AT");
-  while (timeNow + 2 > millis())
+  while (timeNow + 10 > millis())
     ;
   timeNow = millis();
   Uart1SendString("AT+SLEEP");

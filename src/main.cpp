@@ -5,6 +5,9 @@
 #include <header.h>
 #include <CircularBuffer.h>
 #include "Sensors.cpp"
+#include "model.h"
+
+Eloquent::ML::Port::RVC clf;
 
 // SI7021 I2C address is 0x40(64)
 #define si7021 0x40
@@ -18,7 +21,10 @@ temperatureSensor Temp;
 unsigned long timeNow = 0;
 
 CircularBuffer<float, 4> tempData;
-CircularBuffer<float, 90> motionData;
+CircularBuffer<float, 45> motionData;
+CircularBuffer<float, 5> Xnorm;
+CircularBuffer<float, 5> Ynorm;
+CircularBuffer<float, 5> Znorm;
 // unsigned long timeNow = 0;
 
 void setup()
@@ -35,7 +41,7 @@ void setup()
 
   sleepModeSetup();
   // Put BLE to Sleep
-  // BleSleep();
+  BleSleep();
 }
 
 void loop()
@@ -49,23 +55,74 @@ void loop()
   float tempSensor = Temp.Read(0xF3);
   tempData.push(tempSensor);
 
-  // Motion sensor readings
-  Accelerometer.Read(0x32);
-
-  float X = Accelerometer.X();
-  motionData.push(X);
-
-  float Y = Accelerometer.Y();
-  motionData.push(Y);
-
-  float Z = Accelerometer.Z();
-  motionData.push(Z);
-  for (int i = 0; i < 90; i++)
+  // Calculation normalisation factor
+  for (int i = 0; i < 5; i++)
   {
-    PORTB |= (1 << PB5);
-    Uart0SendFloat(motionData[i]);
+    Accelerometer.Read(0x32);
+    float X = Accelerometer.X();
+    Xnorm.push(X);
+
+    float Y = Accelerometer.Y();
+    Ynorm.push(Y);
+
+    float Z = Accelerometer.Z();
+    Znorm.push(Z);
+    delay(5);
   }
-  PORTB &= ~(1 << PB5);
+  float avgx = 0;
+  float avgy = 0;
+  float avgz = 0;
+  using index_t = decltype(Xnorm)::index_t;
+  for (index_t i = 0; i < Xnorm.size(); i++)
+  {
+    avgx += Xnorm[i] / Xnorm.size();
+    avgy += Ynorm[i] / Ynorm.size();
+    avgz += Znorm[i] / Znorm.size();
+  }
+
+  // Storing normalized Motion sensor data in a buffer of size 45.
+  for (int i = 0; i < 5; i++)
+  {
+    // Motion sensor readings
+    Accelerometer.Read(0x32);
+
+    float X = Accelerometer.X() - avgx;
+    motionData.push(X);
+
+    float Y = Accelerometer.Y() - avgy;
+    motionData.push(Y);
+
+    float Z = Accelerometer.Z() - avgz;
+    motionData.push(Z);
+    delay(100);
+  }
+
+  // calculating average temp of temperature buffer
+  float avg_temp = 0;
+  using index_t = decltype(tempData)::index_t;
+  for (index_t i = 0; i < tempData.size(); i++)
+  {
+    avg_temp += tempData[i] / tempData.size();
+  }
+
+  // trigerring ML inference if Temp rises above a threshhold
+  if (true)
+  {
+    int test = clf.predict(motionData);
+    Uart1SendString("AT");
+    delay(100);
+    if (test == 0)
+    {
+      Uart1SendString("motion");
+    }
+    else
+    {
+      Uart1SendString("rest");
+    }
+    
+  }
+  delay(10);
   // Put MCU to Sleep
+  BleSleep();
   GoToSleep();
 }
