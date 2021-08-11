@@ -25,13 +25,27 @@ CircularBuffer<float, 45> motionData;
 CircularBuffer<float, 5> Xnorm;
 CircularBuffer<float, 5> Ynorm;
 CircularBuffer<float, 5> Znorm;
-// unsigned long timeNow = 0;
 
 void setup()
 {
-  DDRA &= ~(1 << PA0);
+  // DDRA &= ~(1 << PA0);
+  DDRB = 0;
+  DDRA = 0;
+  DDRC = 0;
+  // DDRD = 0;
 
-  DDRB |= (1 << PB5);
+  PINA = 0xFF;
+  PINC = 0xFF;
+  PINB = 0xFF;
+  // PIND = 0xFF;
+
+  // disable ADC
+  ADCSRA = 0;  
+
+  PRR0 = 0xFF;
+  PRR0 &= ~(1 << PRTIM0);
+  PRR1 |= (1 << PRTIM3);
+  MCUCR |= (1<<JTD);
 
   Temp.Setup(si7021);
   Accelerometer.Setup(ADXL345);
@@ -41,11 +55,12 @@ void setup()
 
   sleepModeSetup();
   // Put BLE to Sleep
-  BleSleep();
+  // BleSleep();
 }
 
 void loop()
 {
+
   // while ((PINA & (1 << PA0)) == (1 << PA0))
   // {
   //   BleConfigMode();
@@ -69,6 +84,7 @@ void loop()
     Znorm.push(Z);
     delay(5);
   }
+
   float avgx = 0;
   float avgy = 0;
   float avgz = 0;
@@ -97,6 +113,7 @@ void loop()
     delay(100);
   }
 
+
   // calculating average temp of temperature buffer
   float avg_temp = 0;
   using index_t = decltype(tempData)::index_t;
@@ -119,10 +136,10 @@ void loop()
     {
       Uart1SendString("rest");
     }
-    
+
   }
-  delay(10);
+  delay(50);
   // Put MCU to Sleep
-  BleSleep();
+  // BleSleep();
   GoToSleep();
 }
