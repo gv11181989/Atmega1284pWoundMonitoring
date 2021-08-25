@@ -17,7 +17,7 @@ Eloquent::ML::Port::RVC clf;
 accelerometer Accelerometer;
 temperatureSensor Temp;
 
-#define Baud 12
+#define Baud 103
 unsigned long timeNow = 0;
 
 CircularBuffer<float, 4> tempData;
@@ -28,6 +28,11 @@ CircularBuffer<float, 5> Znorm;
 
 void setup()
 {
+
+  // CLKPR &= ~(1 << CLKPS0);
+  // delay(10);
+  // CLKPR |= (1 << CLKPCE);
+
   // DDRA &= ~(1 << PA0);
   DDRB = 0;
   DDRA = 0;
@@ -40,17 +45,19 @@ void setup()
   // PIND = 0xFF;
 
   // disable ADC
-  ADCSRA = 0;  
+  ADCSRA = 0;
 
   PRR0 = 0xFF;
   PRR0 &= ~(1 << PRTIM0);
+  PRR0 &= ~(1 << PRUSART1);
+  PRR0 &= ~(1 << PRTWI);
   PRR1 |= (1 << PRTIM3);
-  MCUCR |= (1<<JTD);
+  MCUCR |= (1 << JTD);
 
   Temp.Setup(si7021);
   Accelerometer.Setup(ADXL345);
 
-  Uart0Setup(Baud);
+  // Uart0Setup(Baud);
   Uart1Setup(Baud);
 
   sleepModeSetup();
@@ -61,10 +68,10 @@ void setup()
 void loop()
 {
 
-  // while ((PINA & (1 << PA0)) == (1 << PA0))
-  // {
-  //   BleConfigMode();
-  // }
+  // // while ((PINA & (1 << PA0)) == (1 << PA0))
+  // // {
+  // //   BleConfigMode();
+  // // }
 
   // Temp sensor reading
   float tempSensor = Temp.Read(0xF3);
@@ -110,9 +117,8 @@ void loop()
 
     float Z = Accelerometer.Z() - avgz;
     motionData.push(Z);
-    delay(100);
+    delay(15);
   }
-
 
   // calculating average temp of temperature buffer
   float avg_temp = 0;
@@ -127,19 +133,17 @@ void loop()
   {
     int test = clf.predict(motionData);
     Uart1SendString("AT");
-    delay(100);
+    delay(50);
     if (test == 0)
     {
-      Uart1SendString("motion");
+      Uart1SendString("motion  ");
     }
     else
     {
-      Uart1SendString("rest");
+      Uart1SendString("rest  ");
     }
-
   }
-  delay(50);
-  // Put MCU to Sleep
+  // // Put MCU to Sleep
   // BleSleep();
   GoToSleep();
 }
