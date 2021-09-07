@@ -29,9 +29,9 @@ CircularBuffer<float, 5> Znorm;
 void setup()
 {
 
-  // CLKPR &= ~(1 << CLKPS0);
-  // delay(10);
-  // CLKPR |= (1 << CLKPCE);
+  CLKPR &= ~(1 << CLKPS0);
+  delay(10);
+  CLKPR |= (1 << CLKPCE);
 
   // DDRA &= ~(1 << PA0);
   DDRB = 0;
@@ -54,8 +54,8 @@ void setup()
   PRR1 |= (1 << PRTIM3);
   MCUCR |= (1 << JTD);
 
-  Temp.Setup(si7021);
-  Accelerometer.Setup(ADXL345);
+  // Temp.Setup(si7021);
+  // Accelerometer.Setup(ADXL345);
 
   // Uart0Setup(Baud);
   Uart1Setup(Baud);
@@ -74,21 +74,21 @@ void loop()
   // // }
 
   // Temp sensor reading
-  float tempSensor = Temp.Read(0xF3);
-  tempData.push(tempSensor);
+  // float tempSensor = Temp.Read(0xF3);
+  tempData.push(0);
 
   // Calculation normalisation factor
   for (int i = 0; i < 5; i++)
   {
-    Accelerometer.Read(0x32);
-    float X = Accelerometer.X();
-    Xnorm.push(X);
+    // Accelerometer.Read(0x32);
+    // float X = Accelerometer.X();
+    Xnorm.push(0);
 
-    float Y = Accelerometer.Y();
-    Ynorm.push(Y);
+    // float Y = Accelerometer.Y();
+    Ynorm.push(0);
 
-    float Z = Accelerometer.Z();
-    Znorm.push(Z);
+    // float Z = Accelerometer.Z();
+    Znorm.push(0);
     delay(5);
   }
 
@@ -107,15 +107,15 @@ void loop()
   for (int i = 0; i < 5; i++)
   {
     // Motion sensor readings
-    Accelerometer.Read(0x32);
+    // Accelerometer.Read(0x32);
 
-    float X = Accelerometer.X() - avgx;
+    float X = 0 - avgx;
     motionData.push(X);
 
-    float Y = Accelerometer.Y() - avgy;
+    float Y = 0 - avgy;
     motionData.push(Y);
 
-    float Z = Accelerometer.Z() - avgz;
+    float Z = 0 - avgz;
     motionData.push(Z);
     delay(15);
   }
