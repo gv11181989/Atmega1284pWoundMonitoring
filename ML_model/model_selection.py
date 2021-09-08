@@ -14,7 +14,10 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import KFold
+from skbayes.rvm_ard_models import RVC
 
+import warnings
+warnings.filterwarnings("ignore")
 
 def load_features(folder):
     dataset = np.array([])
@@ -79,14 +82,14 @@ def model_selection(folder_address):
     folder = folder_address
     dataset, label, classmap = load_features(folder)
 
-    classifiers = [SVC]#, RandomForestClassifier, DecisionTreeClassifier]
+    classifiers = [SVC,RVC]#, RandomForestClassifier, DecisionTreeClassifier]
 
     # lists with the parameters for the classifier SVM
-    c_values = [0.1, 1, 10, 100, 1000, 10000]
-    kernels = ['linear', 'sigmoid', 'poly']
-    gamma_values = [1, 0.1, 0.01, 0.001, 0.0001]
-    degree_values = [2, 3, 4, 5, 6]
-    coef0_values = [0, 0.25, 0.5, 0.75, 1]
+    c_values = [0.1, 1, 10]
+    kernels = ['linear', 'sigmoid', 'poly','rbf']
+    gamma_values = [0.1,0.01, 0.001, 0.0001]
+    degree_values = [2, 3, 4]
+    coef0_values = [0, 0.25, 0.5]
 
     # lists with the parameters for the classifier Random forest
     n_estimators_ = [10, 40, 80, 100]
@@ -135,89 +138,16 @@ def model_selection(folder_address):
                             (performance), ignore_index=True)
                         print(performance)
 
-        elif clf == RandomForestClassifier:
-            for n_estimator in n_estimators_:
-                for max_depth in max_depth_:
-                    parameters = {'n_estimators': n_estimator,
-                                  'max_depth': max_depth}
-                    _, performance = classifier(
-                        clf, dataset, label, **parameters)
-                    performances = performances.append(
-                        (performance), ignore_index=True)
-
-                    print(performance)
-        else:
-            _, performance = classifier(clf, dataset, label)
-            performances = performances.append(
-                (performance), ignore_index=True)
-
-            print(performance)
-
-    Short_list = performances.sort_values(
-        by=['Score'], ascending=False).iloc[:10, :]
-    pd.DataFrame(Short_list).to_csv("classifier_shortlist.csv", index=False)
-
-
-def model_selection2(dataset,label):
-
- 
-    
-
-    classifiers = [SVC]#, RandomForestClassifier, DecisionTreeClassifier]
-
-    # lists with the parameters for the classifier SVM
-    c_values = [0.1, 1, 10, 100, 1000, 10000]
-    kernels = ['linear', 'sigmoid','rbf,' 'poly']
-    gamma_values = [1, 0.1, 0.01, 0.001, 0.0001]
-    degree_values = [2, 3, 4, 5, 6]
-    coef0_values = [0, 0.25, 0.5, 0.75, 1]
-
-    # lists with the parameters for the classifier Random forest
-    n_estimators_ = [10, 40, 80, 100]
-    max_depth_ = [2, 8, 16, 20]
-
-    performances = pd.DataFrame()
-
-    for clf in classifiers:
-        if clf == SVC:
-            for C in c_values:
+        elif clf == RVC:
                 for kernel in kernels:
-                    if kernel == 'rbf' or kernel == 'poly' or kernel == 'sigmoid':
                         for gamma in gamma_values:
-                            if kernel == 'poly' or kernel == 'sigmoid':
-                                for coef0 in coef0_values:
-                                    if kernel == 'poly':
-                                        for degree in degree_values:
-                                            parameters = {
-                                                'C': C, 'kernel': kernel, 'gamma': gamma, 'degree': degree, 'coef0': coef0}
-                                            _, performance = classifier(
-                                                clf, dataset, label, **parameters)
-                                            performances = performances.append(
-                                                (performance), ignore_index=True)
-                                            print(performance)
-                                    else:
-                                        parameters = {
-                                            'C': C, 'kernel': kernel, 'gamma': gamma, 'coef0': coef0}
-                                        _, performance = classifier(
-                                            clf, dataset, label, **parameters)
-                                        performances = performances.append(
-                                            (performance), ignore_index=True)
-                                        print(performance)
-                            else:
-                                parameters = {
-                                    'C': C, 'kernel': kernel, 'gamma': gamma}
-                                _, performance = classifier(
-                                    clf, dataset, label, **parameters)
-                                performances = performances.append(
-                                    (performance), ignore_index=True)
-                                print(performance)
-                    else:
-                        parameters = {'C': C, 'kernel': kernel}
-                        _, performance = classifier(
-                            clf, dataset, label, **parameters)
-                        performances = performances.append(
-                            (performance), ignore_index=True)
-                        print(performance)
+                            parameters = {
+                                'kernel': kernel, 'gamma': gamma}
+                            _, performance = classifier(
+                                clf, dataset, label, **parameters)
+                            performances = performances.append(
+                                (performance), ignore_index=True)
+                            print(performance)
 
         elif clf == RandomForestClassifier:
             for n_estimator in n_estimators_:
@@ -240,6 +170,9 @@ def model_selection2(dataset,label):
     Short_list = performances.sort_values(
         by=['Score'], ascending=False).iloc[:10, :]
     pd.DataFrame(Short_list).to_csv("classifier_shortlist.csv", index=False)
+
+
+
 
 
 if __name__ == '__main__':
@@ -284,17 +217,17 @@ if __name__ == '__main__':
 
     print(clf.score(x,y))
 
-    prdction = [x[1]]
+#     prdction = [x[1]]
 
-    print(prdction)
-    print(y)
-    print(clf.predict(x))
+#     print(prdction)
+#     print(y)
+#     print(clf.predict(x))
 
-    # print(clf.relevant_vectors_)
+#     # print(clf.relevant_vectors_)
 
-    c_code = port(clf)
-    with open('model.h', "w") as text_file:
-        text_file.write(c_code)
+#     c_code = port(clf)
+#     with open('model.h', "w") as text_file:
+#         text_file.write(c_code)
 
 
 
