@@ -73,25 +73,24 @@ void loop()
   // //   BleConfigMode();
   // // }
 
-  // Temp sensor reading
-  // float tempSensor = Temp.Read(0xF3);
-  tempData.push(0);
+// Temp sensor reading
+  float tempSensor = Temp.Read(0xF3);
+  tempData.push(tempSensor);
 
   // Calculation normalisation factor
   for (int i = 0; i < 5; i++)
   {
-    // Accelerometer.Read(0x32);
-    // float X = Accelerometer.X();
-    Xnorm.push(0);
+    Accelerometer.Read(0x32);
+    float X = Accelerometer.X();
+    Xnorm.push(X);
 
-    // float Y = Accelerometer.Y();
-    Ynorm.push(0);
+    float Y = Accelerometer.Y();
+    Ynorm.push(Y);
 
-    // float Z = Accelerometer.Z();
-    Znorm.push(0);
+    float Z = Accelerometer.Z();
+    Znorm.push(Z);
     delay(5);
   }
-
   float avgx = 0;
   float avgy = 0;
   float avgz = 0;
@@ -107,17 +106,17 @@ void loop()
   for (int i = 0; i < 5; i++)
   {
     // Motion sensor readings
-    // Accelerometer.Read(0x32);
+    Accelerometer.Read(0x32);
 
-    float X = 0 - avgx;
+    float X = Accelerometer.X() - avgx;
     motionData.push(X);
 
-    float Y = 0 - avgy;
+    float Y = Accelerometer.Y() - avgy;
     motionData.push(Y);
 
-    float Z = 0 - avgz;
+    float Z = Accelerometer.Z() - avgz;
     motionData.push(Z);
-    delay(15);
+    delay(100);
   }
 
   // calculating average temp of temperature buffer
@@ -133,17 +132,19 @@ void loop()
   {
     int test = clf.predict(motionData);
     Uart1SendString("AT");
-    delay(50);
+    delay(100);
     if (test == 0)
     {
-      Uart1SendString("motion  ");
+      Uart1SendString("motion");
     }
     else
     {
-      Uart1SendString("rest  ");
+      Uart1SendString("rest");
     }
+    
   }
-  // // Put MCU to Sleep
+  delay(10);
+  // Put MCU to Sleep
   // BleSleep();
   GoToSleep();
 }
