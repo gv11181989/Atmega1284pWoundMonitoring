@@ -71,18 +71,13 @@ def classifier(classifier, dataset, label, **kwargs):
         'Name': classifier.__name__, **kwargs, 'Score': round((score*100), 2)}
     return clf, classifier_performance
 
-    # c_code = port(clf, classmap=classmap)
-
-    # with open("model_RandomForest.h", "w") as text_file:
-    #     text_file.write(c_code)
-
 
 def model_selection(folder_address):
 
     folder = folder_address
     dataset, label, classmap = load_features(folder)
 
-    classifiers = [SVC,RVC]#, RandomForestClassifier, DecisionTreeClassifier]
+    classifiers = [SVC,RVC,RandomForestClassifier, DecisionTreeClassifier]
 
     # lists with the parameters for the classifier SVM
     c_values = [0.1, 1, 10]
@@ -170,65 +165,5 @@ def model_selection(folder_address):
     Short_list = performances.sort_values(
         by=['Score'], ascending=False).iloc[:10, :]
     pd.DataFrame(Short_list).to_csv("classifier_shortlist.csv", index=False)
-
-
-
-
-
-if __name__ == '__main__':
-
-    import six
-    import sys
-    sys.modules['sklearn.externals.six'] = six
-    from skbayes.rvm_ard_models import RVC
-    import warnings
-    warnings.filterwarnings("ignore")
-
-    folder = 'dataset'
-    dataset, label,classmap = load_features(folder)
-
-    thirdclass = np.full(dataset[0].shape,10).reshape(1,45)
-    dataset = np.append(dataset,thirdclass,axis=0)
-    label = np.append(label,'temp')
-
-
-
-
-    # from sklearn import datasets
-    # iris = datasets.load_iris()
-    # dataset = (iris['data'])
-    # label = (iris['target'])
-
-    # from sklearn.datasets import load_breast_cancer
-    # dataset = load_breast_cancer().data
-    # label = load_breast_cancer().target
-
-
-    le = LabelEncoder()
-    int_label = (le.fit_transform(label))
-
-
-    X, x, Y, y = train_test_split(
-        dataset, int_label, test_size=0.33, random_state=42)
-
-    clf = RVC(kernel='rbf', gamma=0.1)
-    # clf = SVC(C=1, kernel='linear', gamma=0.1)
-    clf.fit(X, Y)
-
-    print(clf.score(x,y))
-
-#     prdction = [x[1]]
-
-#     print(prdction)
-#     print(y)
-#     print(clf.predict(x))
-
-#     # print(clf.relevant_vectors_)
-
-#     c_code = port(clf)
-#     with open('model.h', "w") as text_file:
-#         text_file.write(c_code)
-
-
 
     

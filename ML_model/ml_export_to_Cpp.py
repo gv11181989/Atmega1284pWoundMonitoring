@@ -9,7 +9,7 @@ from skbayes.rvm_ard_models import RVC
 import numpy as np
 
 
-model_selection('dataset')
+# model_selection('dataset')
 
 dataset, label, classmap = load_features('dataset')
 thirdclass = np.full(dataset[0].shape,10).reshape(1,45)
@@ -55,6 +55,7 @@ for i in range(5):
 
 
 Best_performance = Summery.sort_values(by = ['Size_KBs'],ascending=True).iloc[0]
+pd.DataFrame(Summery.sort_values(by = ['Size_KBs'],ascending=True)).to_csv("Summery.csv", index=False)
 Best_model = Best_performance['Model']
 Best_model_size = round(Best_performance['Size_KBs'],2)
 
