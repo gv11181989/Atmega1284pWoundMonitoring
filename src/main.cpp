@@ -131,7 +131,7 @@ void loop()
   if (true)
   {
     int test = clf.predict(motionData);
-    Uart1SendString("AT");
+    // Uart1SendString("AT");
     delay(100);
     if (test == 0)
     {
