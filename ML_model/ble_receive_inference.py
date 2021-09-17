@@ -20,7 +20,8 @@ async def run(address):
 
     async with BleakClient(address) as client:
         await client.start_notify(CHARACTERISTIC_UUID, notification_handler)
-        await asyncio.sleep(1.0)
+        while(1):
+            await asyncio.sleep(1.0)
         await client.stop_notify(CHARACTERISTIC_UUID)
 
 
