@@ -15,11 +15,6 @@ void Uart0Setup(unsigned int baud)
 
 void Uart1Setup(unsigned int baud)
 {
-  // CLKPR &= ~(1 << CLKPS3);
-  // CLKPR |= (1 << CLKPS2);
-  // CLKPR &= ~(1 << CLKPS1);
-  // CLKPR &= ~(1 << CLKPS0);
-  // CLKPR |= (1 << CLKPCE);
   UCSR1A |= (1 << U2X1);
   UBRR1H = (baud >> 8); // Load upper 8-bits of the baud rate value into the high byte of the UBRR register
   UBRR1L = baud;        // Load lower 8-bits of the baud rate value into the low byte of the UBRR register

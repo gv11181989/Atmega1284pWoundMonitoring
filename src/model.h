@@ -42,7 +42,7 @@ namespace Eloquent {
                             kernel += pow(x[i] - va_arg(w, double), 2);
                         }
 
-                        return exp(-0.1 * kernel);
+                        return exp(-0.0001 * kernel);
                     }
                 };
             }

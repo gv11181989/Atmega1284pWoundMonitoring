@@ -66,30 +66,30 @@ public:
     delay(10);
     Wire.beginTransmission(i2cAddr); // Start communicating with the device
     Wire.write(0x31);                //range
-    Wire.write(1); // range +-8g
+    Wire.write(1);                   // range +-8g
     Wire.endTransmission();
-     delay(10);
-     // This code goes in the SETUP section
-// Off-set Calibration
-  //X-axis
-  Wire.beginTransmission(i2cAddr);
-  Wire.write(0x1E);  // X-axis offset register
-  Wire.write(4);
-  Wire.endTransmission();
-  delay(10);
-  //Y-axis
-  Wire.beginTransmission(i2cAddr);
-  Wire.write(0x1F); // Y-axis offset register
-  Wire.write(-3);
-  Wire.endTransmission();
-  delay(10);
-  
-  //Z-axis
-  Wire.beginTransmission(i2cAddr);
-  Wire.write(0x20); // Z-axis offset register
-  Wire.write(2);
-  Wire.endTransmission();
-  delay(10);
+    delay(10);
+    // This code goes in the SETUP section
+    // Off-set Calibration
+    //X-axis
+    Wire.beginTransmission(i2cAddr);
+    Wire.write(0x1E); // X-axis offset register
+    Wire.write(4);
+    Wire.endTransmission();
+    delay(10);
+    //Y-axis
+    Wire.beginTransmission(i2cAddr);
+    Wire.write(0x1F); // Y-axis offset register
+    Wire.write(-3);
+    Wire.endTransmission();
+    delay(10);
+
+    //Z-axis
+    Wire.beginTransmission(i2cAddr);
+    Wire.write(0x20); // Z-axis offset register
+    Wire.write(2);
+    Wire.endTransmission();
+    delay(10);
   }
 
   void Read(int command)
