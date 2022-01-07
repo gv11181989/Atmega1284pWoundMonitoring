@@ -1,6 +1,6 @@
 Model,Size_KBs
-model_RVC_kernel_rbf_gamma_0.001,1.97265625
-model_RVC_kernel_rbf_gamma_0.0001,2.0
-model_RVC_kernel_rbf_gamma_0.1,2.591796875
+model_RVC_kernel_rbf_gamma_0.0001,1.998046875
+model_RVC_kernel_rbf_gamma_0.1,2.5908203125
 model_RVC_kernel_rbf_gamma_0.01,2.630859375
+model_SVC_C_1.0_kernel_rbf_gamma_0.1,10.8818359375
 model_SVC_C_10.0_kernel_rbf_gamma_0.1,10.935546875

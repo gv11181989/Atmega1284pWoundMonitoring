@@ -11,7 +11,7 @@ ADDRESS = "64:69:4E:8A:09:80"
 
 
 def notification_handler(sender, data):
-    """Simple notification handler which prints the data received."""
+    """Notification data received to .csv file."""
     values = round(struct.unpack('<f', data)[0],2)
     motion_dataset.append(values)
     to_csv = np.array(motion_dataset)

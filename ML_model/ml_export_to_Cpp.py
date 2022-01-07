@@ -2,16 +2,16 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-from model_selection import load_features, classifier,model_selection
+from model_selection import load_features, cross_validation,model_selection
 from micromlgen import port
 from pathlib import Path
 from skbayes.rvm_ard_models import RVC
 import numpy as np
 
+folder = "dataset"
 
-# model_selection('dataset')
-
-dataset, label, classmap = load_features('dataset')
+# model_selection(folder)
+dataset, label = load_features(folder)
 thirdclass = np.full(dataset[0].shape,10).reshape(1,45)
 dataset = np.append(dataset,thirdclass,axis=0)
 label = np.append(label,'temp')
@@ -38,7 +38,7 @@ for i in range(5):
     parameters = classifiers_list.drop(['Name'], axis=1).loc[i]
     parameters.dropna(axis=0, inplace=True)
 
-    clf, _ = classifier(model, dataset, label, **parameters)
+    clf, _ = cross_validation(model, dataset, label, **parameters).KFold()
     file_name = parameters.to_json()
     file_name = file_name.replace('{','').replace('"', '').replace(
         ',', '_').replace('}','').replace(':','_').replace(' ', '_')
@@ -58,5 +58,8 @@ Best_performance = Summery.sort_values(by = ['Size_KBs'],ascending=True).iloc[0]
 pd.DataFrame(Summery.sort_values(by = ['Size_KBs'],ascending=True)).to_csv("Summery.csv", index=False)
 Best_model = Best_performance['Model']
 Best_model_size = round(Best_performance['Size_KBs'],2)
+
+
+print(Summery.to_latex())
 
 print(f'Best model is {Best_model}.\nThe size of Model is {Best_model_size} KBs')
