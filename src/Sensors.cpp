@@ -66,7 +66,7 @@ public:
     delay(10);
     Wire.beginTransmission(i2cAddr); // Start communicating with the device
     Wire.write(0x31);                //range
-    Wire.write(1);                   // range +-8g
+    Wire.write(1);                   // range +-4g
     Wire.endTransmission();
     delay(10);
     // This code goes in the SETUP section

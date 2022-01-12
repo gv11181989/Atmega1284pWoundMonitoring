@@ -66,10 +66,10 @@ void setup()
 
 void loop()
 {
-  // // while ((PINA & (1 << PA0)) == (1 << PA0))
-  // // {
-  // //   BleConfigMode();
-  // // }
+  while ((PINA & (1 << PA0)) == (1 << PA0))
+  {
+    BleConfigMode();
+  }
 
   // Temp sensor reading
   float tempSensor = Temp.Read(0xF3);
@@ -126,11 +126,11 @@ void loop()
   }
 
   // trigerring ML inference if Temp rises above a threshhold
-  if (true)
+  if (avg_temp >= 37.4)
   {
     int test = clf.predict(motionData);
-    // Uart1SendString("AT");
-    // delay(100);
+    Uart1SendString("AT");
+    delay(100);
     if (test == 0)
     {
       Uart1SendString("motion \n");
@@ -140,8 +140,8 @@ void loop()
       Uart1SendString("rest \n");
     }
   }
-  // delay(10);
+  delay(10);
   // Put MCU to Sleep
-  // BleSleep();
+  BleSleep();
   GoToSleep();
 }

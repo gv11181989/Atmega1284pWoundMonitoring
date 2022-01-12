@@ -41,10 +41,10 @@ void setup()
 
 void loop()
 {
-  // while ((PINA & (1 << PA0)) == (1 << PA0))
-  // {
-  //   BleConfigMode();
-  // }
+  while ((PINA & (1 << PA0)) == (1 << PA0))
+  {
+    BleConfigMode();
+  }
 
   // Temp sensor reading
   for (int i = 0; i < 5; i++)

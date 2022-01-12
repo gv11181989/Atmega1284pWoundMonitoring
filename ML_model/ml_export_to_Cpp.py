@@ -10,7 +10,7 @@ import numpy as np
 
 folder = "dataset"
 
-# model_selection(folder)
+model_selection(folder)
 dataset, label = load_features(folder)
 thirdclass = np.full(dataset[0].shape,10).reshape(1,45)
 dataset = np.append(dataset,thirdclass,axis=0)
@@ -23,7 +23,7 @@ classifiers_list = pd.read_csv('classifier_shortlist.csv', sep=',')
 classifiers_list.drop(['Score'], axis=1, inplace=True)
 
 Summery = pd.DataFrame()
-for i in range(5):
+for i in range(1):
     clf_ = classifiers_list.loc[i]['Name']
     if clf_ == 'SVC':
         model = SVC
