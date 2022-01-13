@@ -133,7 +133,7 @@ void loop()
     delay(100);
     if (test == 0)
     {
-      Uart1SendString("motion \n");
+      Uart1SendString("exercise \n");
     }
     else
     {

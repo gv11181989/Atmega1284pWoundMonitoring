@@ -101,7 +101,7 @@ public:
     Wire.endTransmission();
     Wire.requestFrom(i2cAddr, 6, true);       // Read 6 registers total, each axis value is stored in 2 registers
     X_out = (Wire.read() | Wire.read() << 8); // X-axis value
-    X_out = X_out / 128;                      //For a range of +-2g, we need to divide the raw values by 256, according to the datasheet
+    X_out = X_out / 128;                      //For a range of +-4g, we need to divide the raw values by 128, according to the datasheet
     Y_out = (Wire.read() | Wire.read() << 8); // Y-axis value
     Y_out = Y_out / 128;
     Z_out = (Wire.read() | Wire.read() << 8); // Z-axis value
