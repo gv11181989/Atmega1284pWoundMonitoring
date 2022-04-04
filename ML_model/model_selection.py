@@ -86,14 +86,15 @@ class pca:
         label = f'{name} {para}'
         label = re.sub(' +',' ',label)
 
-        plt.contourf(xx, yy, z)
+        cntr = plt.contourf(xx, yy, z)
+        h,_ = cntr.legend_elements()
 
         prd_class = classifier.predict(X)
         plt.scatter(X[:,0], X[:,1],c=prd_class,label = label,edgecolors='black')
 
-
-        plt.xlabel('Feature 1')
-        plt.ylabel('Feature 2')  
+        plt.legend([h[0], h[-1]], ['Exercise', 'Rest'])
+        plt.xlabel('Principal component 1')
+        plt.ylabel('Principal component 2')  
         plt.savefig(f'{label}.png', bbox_inches='tight')
         plt.show()
 
