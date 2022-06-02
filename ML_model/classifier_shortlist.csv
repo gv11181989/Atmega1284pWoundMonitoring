@@ -1,10 +1,11 @@
 C,Name,Score,kernel,coef0,gamma,degree,max_depth,n_estimators
+,RVC,100.0,rbf,,0.1,,,
 ,RVC,100.0,rbf,,0.01,,,
+,RVC,100.0,rbf,,0.001,,,
+,RVC,100.0,rbf,,0.0001,,,
 1.0,SVC,100.0,rbf,,0.1,,,
 10.0,SVC,100.0,rbf,,0.1,,,
-,RVC,100.0,rbf,,0.1,,,
-,RVC,100.0,rbf,,0.001,,,
-1.0,SVC,88.67,rbf,,0.01,,,
 10.0,SVC,88.67,rbf,,0.01,,,
-,RandomForestClassifier,71.73,,,,,8.0,10.0
-,RandomForestClassifier,69.6,,,,,2.0,10.0
+1.0,SVC,88.67,rbf,,0.01,,,
+,RandomForestClassifier,71.27,,,,,20.0,10.0
+,RandomForestClassifier,69.0,,,,,20.0,80.0

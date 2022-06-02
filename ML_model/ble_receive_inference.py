@@ -27,8 +27,10 @@ async def run(address):
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    
+    a=0
     while (1):
+        a += 1
         try:
             loop.run_until_complete(run(ADDRESS))
+            
         except Exception as e: print(e)
