@@ -75,7 +75,7 @@ void loop()
   float tempSensor = Temp.Read(0xF3);
   tempData.push(tempSensor);
 
-  // Calculation normalisation factor
+// below 5 values per axis are recorded with a gap of 100 microseconds.
   for (int i = 0; i < 5; i++)
   {
     Accelerometer.Read(0x32);
@@ -89,6 +89,8 @@ void loop()
     Znorm.push(Z);
     delay(50);
   }
+
+  // Below code takes an average of the 5 values per axis.
   float avgx = 0;
   float avgy = 0;
   float avgz = 0;
@@ -100,7 +102,9 @@ void loop()
     avgz += Znorm[i] / Znorm.size();
   }
 
-  // Storing normalized Motion sensor data in a buffer of size 45.
+  // Below code subtracts the average per axis from the 
+  //instantaneous sensor value 
+  //before storing the values in the circular buffer.
   for (int i = 0; i < 5; i++)
   {
     // Motion sensor readings
