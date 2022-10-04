@@ -4,10 +4,10 @@ const details = document.getElementById("details");
 button.addEventListener("click", async () => {
     try {
 
-        navigator.bluetooth.requestDevice({ filters: [{ services: ['0000ffe0-0000-1000-8000-00805f9b34fb'] }] })
+        navigator.bluetooth.requestDevice({ filters: [{ services: ['f3cd22bb-9fe3-466b-8793-ab9e9061baa5'] }] })
             .then(device => device.gatt.connect())
-            .then(server => server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb'))
-            .then(service => service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb'))
+            .then(server => server.getPrimaryService('f3cd22bb-9fe3-466b-8793-ab9e9061baa5'))
+            .then(service => service.getCharacteristic('f3cd22bb-9fe3-466b-8793-ab9e9061baa5'))
             .then(characteristic => characteristic.startNotifications())
             .then(characteristic => {
                 characteristic.addEventListener('characteristicvaluechanged',
@@ -19,7 +19,7 @@ button.addEventListener("click", async () => {
         function handleCharacteristicValueChanged(event) {
             var value = event.target.value;
             var a = "";
-            for (let i = 0; i < 12; i++) {
+            for (let i = 0; i < 5; i++) {
                 // a.push(value.getUint8(i));
                 a += (String.fromCharCode(parseInt(value.getUint8(i))));
             }

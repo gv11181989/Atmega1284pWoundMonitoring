@@ -66,16 +66,17 @@ void setup()
 
 void loop()
 {
-  while ((PINA & (1 << PA0)) == (1 << PA0))
-  {
-    BleConfigMode();
-  }
+
+  // while ((PINA & (1 << PA0)) == (1 << PA0))
+  // {
+  //   BleConfigMode();
+  // }
 
   // Temp sensor reading
   float tempSensor = Temp.Read(0xF3);
   tempData.push(tempSensor);
 
-// below 5 values per axis are recorded with a gap of 100 microseconds.
+  // below 5 values per axis are recorded with a gap of 100 microseconds.
   for (int i = 0; i < 5; i++)
   {
     Accelerometer.Read(0x32);
@@ -102,9 +103,9 @@ void loop()
     avgz += Znorm[i] / Znorm.size();
   }
 
-  // Below code subtracts the average per axis from the 
-  //instantaneous sensor value 
-  //before storing the values in the circular buffer.
+  // Below code subtracts the average per axis from the
+  // instantaneous sensor value
+  // before storing the values in the circular buffer.
   for (int i = 0; i < 5; i++)
   {
     // Motion sensor readings
@@ -130,22 +131,28 @@ void loop()
   }
 
   // trigerring ML inference if Temp rises above a threshhold
-  if (avg_temp >= 37.4)
+  // if (avg_temp >= 37.4)
+
+  if (true)
+ 
   {
+    String str_to_transmit = String(avg_temp);
     int test = clf.predict(motionData);
-    Uart1SendString("AT");
+    // Uart1SendString("AT");
     delay(100);
     if (test == 0)
     {
-      Uart1SendString("exercise \n");
+      str_to_transmit += " exercise _";
+      Uart1SendString(str_to_transmit);
     }
     else
     {
-      Uart1SendString("rest \n");
+      str_to_transmit += " rest _";
+      Uart1SendString(str_to_transmit);
     }
   }
-  delay(10);
+  // delay(10);
   // Put MCU to Sleep
-  BleSleep();
-  GoToSleep();
+  // BleSleep();
+  // GoToSleep();
 }

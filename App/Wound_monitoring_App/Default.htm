@@ -1,0 +1,174 @@
+﻿<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title></title>
+    <style type="text/css">
+        .card-holder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            height: 100%;
+        }
+
+        .card {
+            /* Add shadows to create the "card" effect */
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            width: 80%;
+            max-width: 500px;
+            text-align: Top;
+            font-family: Arial;
+        }
+
+        /* On mouse-over, add a deeper shadow */
+        .card:hover {
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        /* Add some padding inside the card container */
+        .container {
+            padding: 2px 16px;
+        }
+
+        body {
+            /* font-family: Arial;
+            font-size: 10pt; */
+            background: #aef5ff;
+        }
+
+        table {
+            border: 3px solid #ccc;
+            border-collapse: collapse;
+
+        }
+
+        table th,
+        table tr {
+            background-color: #F7F7F7;
+            color: #333;
+            font-weight: bold;
+            border: 3px solid #ccc;
+        }
+
+        tr:nth-child(even) {
+            background: #a1e8ff;
+
+        }
+
+        table th,
+        table td {
+            padding: 5px;
+            border: 3px solid #ccc;
+            border-color: #ccc;
+        }
+    </style>
+    <!-- <meta http-equiv="refresh" content="5" > -->
+</head>
+
+<body onload="GenerateTable()">
+
+        <button id="getDetails">Connect to device </button>
+        <div id="details"></div>
+
+    <div class="card-holder">
+        <img id="thermometer" src="temp_1.png" style="width:100px">
+        <table id="dvTable" class="card">
+            <tr>
+                <th>Time</th>
+                <th>Recorded Temp.</th>
+                <th>Body status</th>
+            </tr>
+        </table>
+    </div>
+
+    <script type="text/javascript">
+
+        const button = document.getElementById("getDetails");
+        const details = document.getElementById("details");
+        var a = "";
+        var temperature = 0;
+
+        button.addEventListener("click", async () => {
+            try {
+
+                navigator.bluetooth.requestDevice({ filters: [{ services: ['0000ffe0-0000-1000-8000-00805f9b34fb'] }] })
+                    .then(device => device.gatt.connect())
+                    .then(server => server.getPrimaryService('0000ffe0-0000-1000-8000-00805f9b34fb'))
+                    .then(service => service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb'))
+                    .then(characteristic => characteristic.startNotifications())
+                    .then(characteristic => {
+                        characteristic.addEventListener('characteristicvaluechanged',
+                            handleCharacteristicValueChanged);
+                        console.log('Notifications have been started.');
+                    })
+                    .catch(error => { console.log(error); });
+
+                function handleCharacteristicValueChanged(event) {
+                    var value = event.target.value;
+                    a = "";
+                    for (let i = 0; i < value.byteLength; i++) {
+                        // a.push(value.getUint8(i));
+                        a += (String.fromCharCode(parseInt(value.getUint8(i))));
+                    }
+                    //   log('> ' + a.join(' '));
+                    console.log(`Notification says ${a}`);
+                }
+
+
+            } catch (err) {
+                console.error(err);
+                alert("error");
+            }
+        });
+
+
+        function GenerateTable() {
+
+            //Create a HTML Table element.
+            var table = document.createElement("TBODY");
+
+
+            setInterval(function () {
+                temperature = parseFloat(a.substring(0, 5))
+                console.log(temperature)
+                if(temperature<=20.40){
+                    document.getElementById('thermometer').src='temp_1.png'
+                }
+                else if(20.40<temperature<20.50){
+                    document.getElementById('thermometer').src='temp_2.png'
+                }
+                else if(temperature>=20.50){
+                    document.getElementById('thermometer').src='temp_3.png'
+                }
+                if (a.length > 0) {
+                    row = table.insertRow(-1);
+                    for (var j = 0; j < 3; j++) {
+                        var cell = row.insertCell(-1);
+                        if (j === 0) {
+                            if (temperature > 37.00) { alert("Fever detected"); }
+                            const timestamp = Date.now()
+                            const humanReadableDateTime = new Date(timestamp).toLocaleString()
+                            cell.innerHTML = humanReadableDateTime;
+                        }
+                        else if (j === 1) {
+                            cell.innerHTML = a.substring(0, 5);
+                        }
+                        else if (j === 2) {
+                            cell.innerHTML = a.substring(6, (a.length - 1));
+                        }
+                    }
+                }
+            }, 5000);
+            var dvTable = document.getElementById("dvTable");
+            // dvTable.innerHTML = "";
+            dvTable.appendChild(table);
+        }
+
+
+    </script>
+</body>
+
+</html>
